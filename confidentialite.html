@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Politique de confidentialité — CbX0 St0r3</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#06060F;color:#F0EEF8;font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.8}
+a{color:#A78BFA;text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:60px 32px 100px}
+.back{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#5E5C7A;margin-bottom:40px;text-decoration:none;transition:color .2s}
+.back:hover{color:#A78BFA}
+h1{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:#F8F7FF;margin-bottom:8px;letter-spacing:1px}
+.subtitle{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#5E5C7A;margin-bottom:48px}
+h2{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:#A78BFA;letter-spacing:3px;text-transform:uppercase;margin:36px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(124,58,237,.15)}
+p{font-size:13px;color:#9CA3B8;margin-bottom:10px}
+ul{font-size:13px;color:#9CA3B8;padding-left:20px;margin-bottom:10px}
+li{margin-bottom:6px}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:12px}
+th{text-align:left;padding:9px 12px;background:rgba(124,58,237,.12);color:#C4B5FD;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;font-size:10px;border-bottom:1px solid rgba(124,58,237,.2)}
+td{padding:9px 12px;color:#9CA3B8;border-bottom:1px solid rgba(124,58,237,.08)}
+.highlight{background:#0E0C1E;border:1px solid rgba(124,58,237,.15);padding:16px 20px;margin:12px 0;font-size:13px;color:#C4B5FD}
+.ok{background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.15);padding:12px 16px;font-size:12px;color:rgba(110,231,183,.8);margin:18px 0}
+.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+@media(max-width:500px){.rights-grid{grid-template-columns:1fr}}
+.right-card{background:#0E0C1E;border:1px solid rgba(124,58,237,.15);padding:14px 16px}
+.right-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#A78BFA;margin-bottom:5px}
+.right-txt{font-size:12px;color:#9CA3B8}
+.ft{margin-top:56px;padding-top:20px;border-top:1px solid rgba(124,58,237,.1);font-size:11px;color:#5E5C7A;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← Retour à la boutique</a>
+  <h1>Politique de confidentialité</h1>
+  <div class="subtitle">Conformité RGPD — Règlement UE 2016/679</div>
+
+  <h2>1. Responsable du traitement</h2>
+  <div class="highlight">
+    <strong style="color:#F8F7FF">CbX0 St0r3 SARL</strong><br>
+    12 Rue des Artisans, 75011 Paris, France<br>
+    Email : <a href="/cdn-cgi/l/email-protection#7404061d0215170d3417160c4407001b06115a1206"><span class="__cf_email__" data-cfemail="d8a8aab1aeb9bba198bbbaa0e8abacb7aabdf6beaa">[email&#160;protected]</span></a>
+  </div>
+
+  <h2>2. Données collectées</h2>
+  <table>
+    <thead><tr><th>Donnée</th><th>Pourquoi</th><th>Base légale</th></tr></thead>
+    <tbody>
+      <tr><td>Nom, prénom</td><td>Gestion du compte, commandes</td><td>Exécution du contrat</td></tr>
+      <tr><td>Adresse email</td><td>Compte, notifications, confirmations</td><td>Exécution du contrat</td></tr>
+      <tr><td>Mot de passe (hashé bcrypt)</td><td>Authentification sécurisée</td><td>Exécution du contrat</td></tr>
+      <tr><td>Historique des commandes</td><td>Suivi, remboursements, litiges</td><td>Obligation légale</td></tr>
+      <tr><td>Vérification d'âge (oui/non)</td><td>Conformité réglementaire mineurs</td><td>Obligation légale</td></tr>
+      <tr><td>Adresse de livraison</td><td>Expédition des commandes</td><td>Exécution du contrat</td></tr>
+    </tbody>
+  </table>
+  <p>Nous ne collectons pas de données de paiement (traitées directement par notre prestataire de paiement sécurisé).</p>
+
+  <h2>3. Stockage et hébergement</h2>
+  <p>Vos données sont stockées sur <strong>Supabase</strong> (PostgreSQL), hébergé sur des serveurs AWS situés en <strong>eu-west-3 (Paris, France)</strong>, garantissant une localisation des données au sein de l'Union européenne.</p>
+  <p>Les mots de passe ne sont <strong>jamais stockés en clair</strong> — uniquement sous forme de hash bcrypt (coût 12).</p>
+  <div class="ok">✓ Aucun transfert de données en dehors de l'UE · ✓ Chiffrement en transit (TLS 1.3) · ✓ Accès restreint à la service role key</div>
+
+  <h2>4. Durée de conservation</h2>
+  <table>
+    <thead><tr><th>Donnée</th><th>Durée de conservation</th></tr></thead>
+    <tbody>
+      <tr><td>Compte utilisateur</td><td>Jusqu'à suppression par l'utilisateur ou 3 ans d'inactivité</td></tr>
+      <tr><td>Commandes</td><td>10 ans (obligation comptable, art. L123-22 du Code de commerce)</td></tr>
+      <tr><td>Données de navigation</td><td>Non conservées (pas de tracking)</td></tr>
+      <tr><td>Notifications</td><td>6 mois</td></tr>
+    </tbody>
+  </table>
+
+  <h2>5. Vos droits (RGPD)</h2>
+  <div class="rights-grid">
+    <div class="right-card"><div class="right-title">Droit d'accès</div><div class="right-txt">Obtenir une copie de vos données personnelles</div></div>
+    <div class="right-card"><div class="right-title">Droit de rectification</div><div class="right-txt">Corriger des données inexactes ou incomplètes</div></div>
+    <div class="right-card"><div class="right-title">Droit à l'effacement</div><div class="right-txt">Demander la suppression de votre compte et de vos données</div></div>
+    <div class="right-card"><div class="right-title">Droit à la portabilité</div><div class="right-txt">Recevoir vos données dans un format structuré (JSON/CSV)</div></div>
+    <div class="right-card"><div class="right-title">Droit d'opposition</div><div class="right-txt">Vous opposer à certains traitements de vos données</div></div>
+    <div class="right-card"><div class="right-title">Droit à la limitation</div><div class="right-txt">Demander la suspension temporaire d'un traitement</div></div>
+  </div>
+  <p>Pour exercer vos droits : <a href="/cdn-cgi/l/email-protection#3747455e4156544e7754554f074443584552195145"><span class="__cf_email__" data-cfemail="a3d3d1cad5c2c0dae3c0c1db93d0d7ccd1c68dc5d1">[email&#160;protected]</span></a>. Réponse sous 30 jours. En cas de litige, vous pouvez saisir la <a href="https://www.cnil.fr" target="_blank">CNIL</a>.</p>
+
+  <h2>6. Cookies</h2>
+  <table>
+    <thead><tr><th>Cookie</th><th>Type</th><th>Durée</th><th>Utilité</th></tr></thead>
+    <tbody>
+      <tr><td>cbx_jwt</td><td>Fonctionnel</td><td>30 jours</td><td>Session utilisateur authentifiée</td></tr>
+      <tr><td>cbx_session</td><td>Fonctionnel</td><td>Session</td><td>Cache local session</td></tr>
+      <tr><td>cbx_age</td><td>Fonctionnel</td><td>1 an</td><td>Vérification d'âge (oui/non)</td></tr>
+      <tr><td>cbx_prods, cbx_cats…</td><td>Fonctionnel</td><td>Indéfini</td><td>Cache local produits/catalogue</td></tr>
+    </tbody>
+  </table>
+  <p>Aucun cookie publicitaire, analytique ou de tracking tiers n'est utilisé.</p>
+
+  <h2>7. Partage des données</h2>
+  <p>Vos données ne sont <strong>jamais vendues ni cédées</strong> à des tiers. Elles peuvent être partagées uniquement avec :</p>
+  <ul>
+    <li><strong>Supabase</strong> — Hébergeur base de données (UE)</li>
+    <li><strong>Vercel</strong> — Hébergeur applicatif (USA, avec garanties adéquates)</li>
+    <li><strong>Resend</strong> — Service d'envoi d'emails transactionnels (UE)</li>
+    <li>Autorités compétentes sur demande légale obligatoire</li>
+  </ul>
+
+  <h2>8. Sécurité</h2>
+  <p>Nous mettons en œuvre des mesures techniques et organisationnelles appropriées :</p>
+  <ul>
+    <li>Mots de passe hashés bcrypt (coût 12)</li>
+    <li>Authentification par JWT signé (expiration 30 jours)</li>
+    <li>Connexions chiffrées TLS 1.3</li>
+    <li>Row Level Security (RLS) activée sur toutes les tables Supabase</li>
+    <li>Code d'accès admin hashé, non stocké en clair</li>
+  </ul>
+
+  <h2>9. Modifications</h2>
+  <p>Cette politique peut être mise à jour à tout moment. La date de mise à jour est indiquée en bas de page. En cas de modification subst
