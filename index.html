@@ -948,9 +948,20 @@ async function syncFromAPI(){
 
 /* Push store data to server (admin changes, etc.) */
 async function pushToAPI(){
-  const adminTok=sessionStorage.getItem('cbx_admin_token');
+  let adminTok=sessionStorage.getItem('cbx_admin_token');
+  // Si token local (fallback), tenter de récupérer un vrai token via l'API
+  if(adminTok==='local-auth'){
+    const savedCode=sessionStorage.getItem('cbx_admin_code');
+    if(savedCode){
+      const r=await apiCall('/admin-auth','POST',{code:savedCode});
+      if(r?.token){
+        adminTok=r.token;
+        sessionStorage.setItem('cbx_admin_token',adminTok);
+      }
+    }
+  }
   if(!adminTok&&API_UP!==false){
-    console.warn('[Supabase] pushToAPI: pas de token admin — reconnecte-toi via le code');
+    console.warn('[Supabase] pushToAPI: pas de token admin');
     return false;
   }
   const lightProds = products.map(p=>({
@@ -1002,7 +1013,10 @@ async function checkAdmin(){
   const stored=localStorage.getItem('cbx_admin_hash');
   const expected=stored||simpleHash('CIME2024');
   if(simpleHash(code.toUpperCase())===expected||code.toUpperCase()===(stored?'':FALLBACK_CODE)){
-    closeSW();openAdmin()
+    // Marquer comme admin localement même sans réponse API
+    sessionStorage.setItem('cbx_admin_token','local-auth');
+    sessionStorage.setItem('cbx_admin_code', code);
+    closeSW();seedIfEmpty().then(()=>openAdmin());
   }else{
     document.getElementById('serr').style.display='block';
     document.getElementById('sinp').value='';
@@ -1831,13 +1845,13 @@ async function checkDbConnection(){
 
   if(d){
     setApiStatus(true);
-    const adminOk=!!sessionStorage.getItem('cbx_admin_token');
+    const rawTok=sessionStorage.getItem('cbx_admin_token');const adminOk=!!rawTok;const tokLabel=rawTok==='local-auth'?'actif (local, sync possible)':rawTok?'actif (4h)':'absent';
     if(det){
       det.innerHTML=`
         <span style="color:#6EE7B7">✓</span> API joignable — latence <strong style="color:var(--wh)">${ms}ms</strong><br>
         <span style="color:#6EE7B7">✓</span> Produits en base : <strong style="color:var(--wh)">${d.products?.length||0}</strong><br>
         <span style="color:#6EE7B7">✓</span> Catégories en base : <strong style="color:var(--wh)">${d.categories?.length||0}</strong><br>
-        <span style="${adminOk?'color:#6EE7B7':'color:#FCA5A5'}">${adminOk?'✓':'⚠'}</span> Token admin : <strong style="color:var(--wh)">${adminOk?'actif (4h)':'absent — entre ton code pour écrire en base'}</strong><br>
+        <span style="${adminOk?'color:#6EE7B7':'color:#FCA5A5'}">${adminOk?'✓':'⚠'}</span> Token admin : <strong style="color:var(--wh)">${tokLabel||'absent — entre ton code pour écrire en base'}</strong><br>
         <span style="color:var(--mu)">Clients & commandes : Supabase → Table Editor</span>
       `;
     }
@@ -1861,7 +1875,7 @@ async function manualSync(){
   const el=document.getElementById('syncResult');
   const adminTok=sessionStorage.getItem('cbx_admin_token');
   if(!adminTok){
-    if(el){el.textContent="❌ Non authentifié — entre d'abord ton code admin (7 clics sur la bud)";el.className='pw-result err';el.style.display='block'}
+    if(el){el.textContent="❌ Entre d'abord ton code admin (7 clics sur la bud 🌿 → tape CIME2024)";el.className='pw-result err';el.style.display='block'}
     return;
   }
   if(el){el.textContent='Synchronisation en cours...';el.className='pw-result';el.style.display='block';el.style.color='var(--mu)'}
