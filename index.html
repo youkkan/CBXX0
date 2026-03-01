@@ -161,8 +161,8 @@ a{text-decoration:none;color:inherit}
 /* ─── PRODUCT POPUP ─── */
 .prod-modal-ov{position:fixed;inset:0;z-index:200;background:rgba(4,3,12,.85);opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(16px)}
 .prod-modal-ov.open{opacity:1;pointer-events:all}
-.prod-modal-box{position:fixed;top:50%;left:50%;transform:translate(-50%,-46%);width:min(900px,95vw);max-height:90vh;background:var(--panel);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;transition:transform .35s,opacity .35s;opacity:0;z-index:201}
-.prod-modal-ov.open+.prod-modal-box{transform:translate(-50%,-50%);opacity:1}.prod-modal-box.open{transform:translate(-50%,-50%);opacity:1}
+.prod-modal-box{position:fixed;top:50%;left:50%;transform:translate(-50%,-46%);width:min(900px,95vw);max-height:90vh;background:var(--panel);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;transition:transform .35s,opacity .35s;opacity:0;z-index:201;pointer-events:none}
+.prod-modal-ov.open+.prod-modal-box{transform:translate(-50%,-50%);opacity:1;pointer-events:all}.prod-modal-box.open{transform:translate(-50%,-50%);opacity:1;pointer-events:all}
 .pm-inner{display:flex;flex:1;overflow:hidden}
 @media(max-width:640px){.pm-inner{flex-direction:column}}
 .pm-gallery{width:340px;flex-shrink:0;position:relative;background:rgba(11,9,24,.8);overflow:hidden}
@@ -762,6 +762,9 @@ a{text-decoration:none;color:inherit}
           </div>
           <div id="dbDetails" style="font-size:11px;color:var(--mu);line-height:1.8"></div>
           <button class="btn btn-g btn-sm" style="margin-top:10px" onclick="checkDbConnection()">↺ Tester la connexion</button>
+          <button class="btn btn-v btn-sm" style="margin-top:8px;width:100%;justify-content:center" onclick="manualSync()">↑ Synchroniser catalogue → Supabase</button>
+          <div id="syncResult" class="pw-result" style="display:none;margin-top:8px"></div>
+
         </div>
         <div class="sep"></div>
         <div class="asec">Gestion des ventes</div>
@@ -945,13 +948,23 @@ async function syncFromAPI(){
 
 /* Push store data to server (admin changes, etc.) */
 async function pushToAPI(){
-  // Strip base64 images — too heavy; only send URLs
+  const adminTok=sessionStorage.getItem('cbx_admin_token');
+  if(!adminTok&&API_UP!==false){
+    console.warn('[Supabase] pushToAPI: pas de token admin — reconnecte-toi via le code');
+    return false;
+  }
   const lightProds = products.map(p=>({
     ...p,
-    images:(p.images||[]).filter(i=>!i.startsWith('data:')),
-    labPdf: p.labPdf ? (p.labPdf.startsWith('data:') ? '__local__' : p.labPdf) : null
+    images:(p.images||[]).filter(i=>!i?.startsWith('data:')),
+    labPdf: p.labPdf ? (p.labPdf.startsWith('data:') ? null : p.labPdf) : null
   }));
-  await apiCall('/admin-save','POST',{categories, products:lightProds, promos, cc, notifs});
+  const r=await apiCall('/admin-save','POST',{categories, products:lightProds, promos, cc, notifs});
+  if(r===null&&API_UP!==false){
+    console.error('[Supabase] admin-save échoué — vérifie SUPABASE_SERVICE_ROLE_KEY et JWT_SECRET');
+  } else if(r){
+    console.log('[Supabase] ✓ données sauvegardées en base');
+  }
+  return !!r;
 }
 
 /* Local persist (always) + remote push for store data changes */
@@ -980,7 +993,10 @@ async function checkAdmin(){
   const res=await apiCall('/admin-auth','POST',{code});
   if(res&&res.ok){
     if(res.token) sessionStorage.setItem('cbx_admin_token',res.token);
-    closeSW();openAdmin();return;
+    closeSW();
+    // Seed Supabase si vide (maintenant qu'on a le token admin)
+    seedIfEmpty().then(()=>openAdmin());
+    return;
   }
   // Fallback: local hash check (si API down)
   const stored=localStorage.getItem('cbx_admin_hash');
@@ -1815,13 +1831,14 @@ async function checkDbConnection(){
 
   if(d){
     setApiStatus(true);
+    const adminOk=!!sessionStorage.getItem('cbx_admin_token');
     if(det){
       det.innerHTML=`
+        <span style="color:#6EE7B7">✓</span> API joignable — latence <strong style="color:var(--wh)">${ms}ms</strong><br>
         <span style="color:#6EE7B7">✓</span> Produits en base : <strong style="color:var(--wh)">${d.products?.length||0}</strong><br>
-        <span style="color:#6EE7B7">✓</span> Catégories : <strong style="color:var(--wh)">${d.categories?.length||0}</strong><br>
-        <span style="color:#6EE7B7">✓</span> Clients : voir Supabase → Table Editor → users<br>
-        <span style="color:#6EE7B7">✓</span> Commandes : voir Supabase → Table Editor → orders<br>
-        <span style="color:var(--mu)">Latence API : ${ms}ms</span>
+        <span style="color:#6EE7B7">✓</span> Catégories en base : <strong style="color:var(--wh)">${d.categories?.length||0}</strong><br>
+        <span style="${adminOk?'color:#6EE7B7':'color:#FCA5A5'}">${adminOk?'✓':'⚠'}</span> Token admin : <strong style="color:var(--wh)">${adminOk?'actif (4h)':'absent — entre ton code pour écrire en base'}</strong><br>
+        <span style="color:var(--mu)">Clients & commandes : Supabase → Table Editor</span>
       `;
     }
     toast('Connexion Supabase OK — '+ms+'ms','tv');
@@ -1839,6 +1856,25 @@ async function checkDbConnection(){
 }
 
 // Seed Supabase avec les produits locaux si la base est vide
+
+async function manualSync(){
+  const el=document.getElementById('syncResult');
+  const adminTok=sessionStorage.getItem('cbx_admin_token');
+  if(!adminTok){
+    if(el){el.textContent="❌ Non authentifié — entre d'abord ton code admin (7 clics sur la bud)";el.className='pw-result err';el.style.display='block'}
+    return;
+  }
+  if(el){el.textContent='Synchronisation en cours...';el.className='pw-result';el.style.display='block';el.style.color='var(--mu)'}
+  const ok=await pushToAPI();
+  if(ok){
+    if(el){el.textContent='✓ Catalogue envoyé vers Supabase';el.className='pw-result ok';el.style.display='block'}
+    toast('Catalogue synchronisé avec Supabase ✦','tv');
+  }else{
+    if(el){el.textContent='❌ Échec — vérifie SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY dans Vercel';el.className='pw-result err';el.style.display='block'}
+    toast('Sync échoué — voir console F12','te');
+  }
+}
+
 async function seedIfEmpty(){
   if(API_UP===false)return;
   const d=await apiCall('/data');
@@ -1937,8 +1973,7 @@ if(currentUser){updateNavAuth();updateNotifBadge()}
   // 3. Pull fresh store data from API
   const ok=await syncFromAPI();
   if(ok){renderCatNav();renderProducts();}
-  // 4. Si la base est vide, seed avec les données locales
-  await seedIfEmpty();
+  // 4. seedIfEmpty est appelé après connexion admin (voir checkAdmin)
 })();
 
 </script>
